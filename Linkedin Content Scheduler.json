@@ -1,0 +1,488 @@
+{
+  "name": "Linkedin Content Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "=days",
+              "daysInterval": 3.5,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        -112
+      ],
+      "id": "fc4508c2-ac34-40d7-8d25-af7a085750cd",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0",
+          "mode": "list",
+          "cachedResultName": "Linkedin content scheduler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        -304
+      ],
+      "id": "5d92d973-823a-4368-849c-c6c30587bfe6",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mnUkUJuT9BKTJJqc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fcfac0ef-f02b-4c1d-a872-f2893aa2e389",
+              "leftValue": "={{ $json.scheduled_iso }}",
+              "rightValue": "={{ new Date().toISOString() }}\n",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -272
+      ],
+      "id": "77bd5c11-c963-44e6-b80b-f0256a4e44c1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "person": "OBm1UWkU1_",
+        "text": "={{ $json.content }}",
+        "shareMediaCategory": "=IMAGE",
+        "binaryPropertyName": "=data",
+        "additionalFields": {
+          "originalUrl": "={{ $json.image_url }}",
+          "title": "=Automation Post"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -336
+      ],
+      "id": "60d10ee4-77a0-4607-8dfa-b86aaac9711b",
+      "name": "post to linkedin",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Ey5y5LkRYWt5CanE",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9df43d-1949-4f04-bce4-332d133e1a95",
+              "name": "=scheduled_iso",
+              "value": "={{  (() => {   const s = $json[\"scheduled_time\"];   if(!s) return null;   const d = new Date(s);   d.setHours(d.getHours() - 5);   return d.toISOString();  })()  }}",
+              "type": "string"
+            },
+            {
+              "id": "bad657d5-de98-4baa-bfbc-d6c706645c12",
+              "name": "=log_now",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            },
+            {
+              "id": "24e9a2d8-c49e-4c5f-8453-25bb3ee3cf39",
+              "name": "=content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "20fcbc25-63ab-418f-95ed-182fdea39578",
+              "name": "=image_url",
+              "value": "={{ $json.image_url }}",
+              "type": "string"
+            },
+            {
+              "id": "b1a1b4b3-b9f9-450b-9be9-44eb9c81da75",
+              "name": "=response_log",
+              "value": "={{ $json.response_log }}",
+              "type": "string"
+            },
+            {
+              "id": "e5a09847-3dab-49c8-a353-323a07033532",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        -96
+      ],
+      "id": "c5d47272-815d-4913-90f0-95938bf3af32",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -48,
+        -384
+      ],
+      "id": "43e34fbf-f458-48d8-8f3c-087453a4e1dd",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0",
+          "mode": "list",
+          "cachedResultName": "Linkedin content scheduler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpLkMGhQbnTtkz5SVkmUevTq59sxjxpQW-lOCWpr-d0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "posted",
+            "response_log": "=\n{{ $json.response_log }}",
+            "id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response_log",
+              "displayName": "response_log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        -336
+      ],
+      "id": "1258d366-33c8-41f0-986a-ef3d7d4d1656",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mnUkUJuT9BKTJJqc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d338a110-2cec-48e3-b4b4-2572f1e578dc",
+              "name": "status",
+              "value": "posted",
+              "type": "string"
+            },
+            {
+              "id": "39fef239-f43d-4d90-93e6-6345e9584c57",
+              "name": "=id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9368ce6a-4ecf-464c-9282-940c9c5454da",
+              "name": "=response_log",
+              "value": "={{ $json.response_log }}",
+              "type": "string"
+            },
+            {
+              "id": "b1f4712b-8f99-45de-a637-230ceff0df6f",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "bbc6c6a3-6f7a-4be9-ae1a-f6afea842470",
+              "name": "=log_now",
+              "value": "={{ $json.log_now }}",
+              "type": "string"
+            },
+            {
+              "id": "2f9e4bbc-54d1-48d4-95a8-5b67b52a8f1b",
+              "name": "=scheduled_iso",
+              "value": "={{ $json.scheduled_iso }}",
+              "type": "string"
+            },
+            {
+              "id": "862ccfc9-763c-4c2f-aea0-1d3dd7c97a74",
+              "name": "=urn",
+              "value": "={{ $json.urn }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        -128
+      ],
+      "id": "bce3cb6c-ebac-412e-84b5-1c80fb9ac438",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        64,
+        -80
+      ],
+      "id": "1a4bf23f-4149-43c0-a0ef-e1bca3d73fb0",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "post to linkedin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "post to linkedin": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ae9b7e08-cd22-4650-87ad-ff35837aa2d9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "25f768bf5d31b2a25889728a7055a03b60253bb1eab52642af46938da66baddd"
+  },
+  "id": "sTOQ8aXgGCOgBjod",
+  "tags": []
+}
