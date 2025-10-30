@@ -22,5 +22,8 @@ An n8n workflow that automatically schedules and posts content to LinkedIn using
 
 ## 📸 Screenshot
 
-![Workflow Screenshot](https://github.com/ayesh-ashraf/Linkedin-Content-Scheduler/blob/main/Linkedin%20content%20scheduler%20workflow.jpg?raw=true)
+![Workflow Screenshot]
+(https://github.com/ayesh-ashraf/Linkedin-Content-Scheduler/blob/main/Linkedin%20content%20scheduler%20workflow.jpg?raw=true)
+(https://github.com/ayesh-ashraf/Linkedin-Content-Scheduler/blob/main/Linkedin%20workflow%20as%20Linkedin%20post.jpg?raw=true)
+(https://github.com/ayesh-ashraf/Linkedin-Content-Scheduler/blob/main/Linkedin%20scheduler%20Google%20sheet.jpg?raw=true)
 
